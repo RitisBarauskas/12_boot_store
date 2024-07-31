@@ -1,13 +1,11 @@
-from random import choices
+from django.http import HttpResponse
+from django.shortcuts import render, get_object_or_404
 
-from django.http import Http404, HttpResponse
-from django.shortcuts import render
-
-from goods.constants import DATABASE, MAX_GOODS_PER_PAGE
+from goods.models import Good, Category
 
 
 def index(request):
-    goods = choices(DATABASE.get('goods'), k=MAX_GOODS_PER_PAGE)
+    goods = Good.objects.all()
     return render(request, 'goods/index.html', {'goods': goods})
 
 
@@ -20,9 +18,6 @@ def category_detail(request, category_slug):
 
 
 def good_detail(request, good_id):
-    goods = DATABASE.get('goods')
-    good = next((good for good in goods if good.get('id') == good_id), None)
-    if not good:
-        raise Http404()
+    good = get_object_or_404(Good, id=good_id)
 
     return render(request, 'goods/good_detail.html', {'good': good})
