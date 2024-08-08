@@ -16,6 +16,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'goods.apps.GoodsConfig',
+    'users.apps.UsersConfig',
 ]
 
 MIDDLEWARE = [
@@ -82,4 +83,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATICFILES_DIRS = [
+    BASE_DIR / 'dev_static',
+]
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_REDIRECT_URL = 'goods:index'
+
+LOGOUT_REDIRECT_URL = 'goods:index'

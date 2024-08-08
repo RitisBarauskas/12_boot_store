@@ -1,6 +1,10 @@
+from django.contrib.auth import get_user_model
 from django.db.models import Model, CharField, SlugField, TextField, ForeignKey, SET_NULL
+from django.urls import reverse
 
 from goods.constants import MAX_LENGTH_CHAR_FIELD, MAX_LENGTH_SLUG_FIELD
+
+User = get_user_model()
 
 
 class Category(Model):
@@ -21,6 +25,7 @@ class Good(Model):
     name = CharField(max_length=MAX_LENGTH_CHAR_FIELD, verbose_name='Название')
     category = ForeignKey(Category, on_delete=SET_NULL, null=True, related_name='goods', verbose_name='Категория')
     description = TextField(verbose_name='Описание')
+    creator = ForeignKey(User, on_delete=SET_NULL, null=True, related_name='goods', verbose_name='Создатель')
 
     class Meta:
         verbose_name = 'Товар'
@@ -29,3 +34,6 @@ class Good(Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('goods:good_detail', args=[str(self.id)])
