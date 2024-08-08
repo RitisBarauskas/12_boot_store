@@ -32,7 +32,6 @@ def goods_by_creator(request):
 
 def good_detail(request, good_id):
     good = get_object_or_404(Good, id=good_id)
-
     return render(request, 'goods/good_detail.html', {'good': good})
 
 
