@@ -1,38 +1,76 @@
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import render, get_object_or_404
+from django.db.models import Q
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
-from django.views.generic import CreateView
+from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 
-from goods.models import Good, Category
+from goods.models import Good, Category, User
 from goods.forms import CategoryForm, GoodForm
 
 
-def index(request):
-    goods = Good.objects.all()
-    return render(request, 'goods/index.html', {'goods': goods})
+class GoodListView(ListView):
+    model = Good
+    template_name = 'goods/index.html'
+    context_object_name = 'goods'
 
 
-def category_list(request):
-    categories = Category.objects.all()
-    return render(request, 'goods/category_list.html', {'categories': categories})
+class CategoryListView(ListView):
+    model = Category
+    template_name = 'goods/category_list.html'
+    context_object_name = 'categories'
 
 
-def category_detail(request, category_slug):
-    category = get_object_or_404(Category, slug=category_slug)
-    goods = category.goods.all()
-    return render(request, 'goods/category_detail.html', {'category': category, 'goods': goods})
+class CategoryDetailView(ListView):
+    model = Good
+    template_name = 'goods/category_detail.html'
+    context_object_name = 'goods'
+    category = None
+
+    def load_category(self):
+        if self.category is None:
+            self.category = get_object_or_404(Category, slug=self.kwargs['category_slug'])
+
+    def get_queryset(self):
+        self.load_category()
+        filters = Q(is_open_for_all=True)
+        if self.request.user.is_authenticated:
+            filters |= Q(creator=self.request.user)
+
+        return self.category.goods.filter(filters)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        self.load_category()
+        context['category'] = self.category
+        return context
 
 
-@login_required
-def goods_by_creator(request):
-    goods = request.user.goods.all()
-    return render(request, 'goods/goods_by_creator.html', {'goods': goods})
+class CreatorDetailView(LoginRequiredMixin, ListView):
+    model = Good
+    template_name = 'goods/goods_by_creator.html'
+    context_object_name = 'goods'
+
+    def get_queryset(self):
+        return self.request.user.goods.all()
 
 
-def good_detail(request, good_id):
-    good = get_object_or_404(Good, id=good_id)
-    return render(request, 'goods/good_detail.html', {'good': good})
+class UserProfileUpdateView(LoginRequiredMixin, UpdateView):
+    model = User
+    fields = ['first_name', 'last_name', 'email']
+    template_name = 'goods/profile_form.html'
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def get_success_url(self):
+        return reverse_lazy('goods:goods_by_creator')
+
+
+class GoodDetailView(DetailView):
+    model = Good
+    template_name = 'goods/good_detail.html'
+    context_object_name = 'good'
+    pk_url_kwarg = 'good_id'
 
 
 class CategoryCreateView(LoginRequiredMixin, CreateView):

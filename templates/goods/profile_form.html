@@ -1,0 +1,15 @@
+{% extends 'extends/base.html' %}
+
+{% block title %}Ваш профиль, {{ request.user.first_name }}{% endblock %}
+
+{% block header %}Ваш профиль, {{ request.user.first_name }}{% endblock %}
+
+{% block content %}
+    <h2>Мы с вами виделись последний раз {{ request.user.last_login }}</h2>
+
+    <form action="{% url 'goods:user_profile_update' %}" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Обновить</button>
+    </form>
+{% endblock %}
