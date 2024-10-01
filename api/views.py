@@ -1,13 +1,22 @@
 from django.contrib.auth import get_user_model
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from goods.models import Category, Good
-from .serializers import CategorySerializer, GoodReadSerializer, GoodWriteSerializer, UserReadSerializer, UserWriteSerializer
+from .serializers import CategorySerializer, GoodReadSerializer, GoodWriteSerializer, UserReadSerializer, UserWriteSerializer, ReviewSerializer
 from .permissions import IsCreatorOrReadOnly
-
+from reviews.models import Review
 
 User = get_user_model()
+
+
+class ReviewViewSet(ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    permission_classes = [AllowAny]
+
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
 
 
 class UserViewSet(ModelViewSet):
