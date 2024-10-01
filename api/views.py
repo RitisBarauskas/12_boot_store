@@ -1,9 +1,19 @@
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from goods.models import Category, Good
-from .serializers import CategorySerializer, GoodReadSerializer, GoodWriteSerializer
+from .serializers import CategorySerializer, GoodReadSerializer, GoodWriteSerializer, ReviewSerializer
 from .permissions import IsCreatorOrReadOnly
+from reviews.models import Review
+
+
+class ReviewViewSet(ModelViewSet):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+    permission_classes = [AllowAny]
+
+    def perform_create(self, serializer):
+        serializer.save(creator=self.request.user)
 
 
 class CategoryViewSet(ModelViewSet):
