@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from rest_framework.exceptions import ValidationError
+from rest_framework.relations import SlugRelatedField
 from rest_framework.serializers import ModelSerializer
 
 from goods.models import Category, Good
@@ -21,6 +22,7 @@ class CategorySerializer(ModelSerializer):
 
 
 class GoodReadSerializer(ModelSerializer):
+    categories = SlugRelatedField(slug_field='slug', queryset=Category.objects.all(), many=True)
     category = CategorySerializer()
     creator = UserReadSerializer()
 
