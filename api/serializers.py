@@ -4,9 +4,16 @@ from rest_framework.relations import SlugRelatedField
 from rest_framework.serializers import ModelSerializer
 
 from goods.models import Category, Good
+from reviews.models import Review
 
 
 User = get_user_model()
+
+
+class ReviewSerializer(ModelSerializer):
+    class Meta:
+        model = Review
+        fields = '__all__'
 
 
 class UserReadSerializer(ModelSerializer):
