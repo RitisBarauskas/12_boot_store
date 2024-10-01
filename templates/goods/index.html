@@ -1,0 +1,18 @@
+{% extends 'extends/base.html' %}
+
+{% block title %}Список товаров{% endblock %}
+
+{% block header %}Список товаров{% endblock %}
+
+{% block content %}
+    <ul>
+        {% for good in goods %}
+            <li>
+                <h3>{{ good.name }}</h3>
+                <p>
+                    <a href="{% url 'goods:good_detail' good.id %}">Подробнее</a>
+                </p>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
