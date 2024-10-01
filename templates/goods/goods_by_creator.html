@@ -1,0 +1,19 @@
+{% extends 'extends/base.html' %}
+
+{% block title %}Список ваших товаров, {{ request.user.first_name }}{% endblock %}
+
+{% block header %}Список ваших товаров, {{ request.user.first_name }}{% endblock %}
+
+{% block content %}
+    <h2>Мы с вами виделись последний раз {{ request.user.last_login }}</h2>
+    <ul>
+        {% for good in goods %}
+            <li>
+                <h3>{{ good.name }}</h3>
+                <p>
+                    <a href="{% url 'goods:good_detail' good.id %}">Подробнее</a>
+                </p>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
