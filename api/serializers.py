@@ -16,6 +16,18 @@ class ReviewSerializer(ModelSerializer):
         fields = '__all__'
 
 
+class UserWriteSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'password', 'first_name', 'last_name', 'email')
+        extra_kwargs = {
+            'password': {'write_only': True},
+        }
+
+    def create(self, validated_data):
+        return User.objects.create_user(**validated_data)
+
+
 class UserReadSerializer(ModelSerializer):
     class Meta:
         model = User
